@@ -1,0 +1,88 @@
+---
+
+- hosts: webservers
+  become: yes
+  vars_files:
+  - vars.yml
+
+  tasks:
+    - name: Update apt-get repo and cache
+      become: yes
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+    - name: Upgrade all apt packages
+      become: yes
+      apt: upgrade=dist force_apt_get=yes
+
+    - name: update nodejs package
+      ansible.builtin.shell: curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+
+    - name: install nodejs
+      apt:
+        name: nodejs
+        state: present
+
+
+    - name: git clone repo
+      shell: git clone https://github.com/ohadr98/bootcamp-app.git
+      args:
+        chdir: /home/{{ USERNAME }}
+
+    - name: create .env file
+      copy:
+        dest: "bootcamp-app/.env"
+        content: |
+          # Node Weight Tracker
+          HOST_URL={{ HOSTURL }}
+          COOKIE_ENCRYPT_PWD=superAwesomePasswordStringThatIsAtLeast32CharactersLong!
+          NODE_ENV=development
+
+          # Okta configuration
+          OKTA_ORG_URL={{ DOMAIN }}
+          OKTA_CLIENT_ID={{ CLIENTID }}
+          OKTA_CLIENT_SECRET={{ CLIENTSECRET }}
+
+          # Host configuration
+          PGHOST={{ PGHOSTNAME }}
+          PGUSERNAME={{ PGUSERNAME }}
+          PGDATABASE=postgres
+          PGPASSWORD={{ PGPASS }}
+          PGPORT=5432
+
+    - name: Changing perm of "dbrun.sh", adding "+x"
+      file: dest=/home/{{ USERNAME }}/bootcamp-app/dbrun.sh mode=+x
+    - name: Reboot the db
+      ansible.builtin.cron:
+        name: "a job for reboot"
+        job: "/home/{{ USERNAME }}/bootcamp-app/dbrun.sh"
+
+    - name: Changing perm of "webrun.sh", adding "+x"
+      file: dest=/home/{{ USERNAME }}/bootcamp-app/webrun.sh mode=+x
+    - name: Reboot the web app
+      ansible.builtin.cron:
+        name: "a job for reboot"
+        job: "/home/{{ USERNAME }}/bootcamp-app/webrun.sh"
+
+    - name: install dependencies
+      become: yes
+      command: "npm install {{ item }}"
+      args:
+        chdir: /home/{{ USERNAME }}/bootcamp-app
+      with_items:
+        - '@hapi/hapi@19'
+        - '@hapi/bell@12' 
+        - '@hapi/boom@9'
+        - '@hapi/cookie@11' 
+        - '@hapi/inert@6'
+        - '@hapi/joi@17' 
+        - '@hapi/vision@6' 
+        - 'dotenv@8'
+        - 'ejs@3' 
+        - 'postgres@1'
+
+
+    - name: install nodemon
+      become: yes
+      command: "npm install --save-dev nodemon@2"
+      args:
+        chdir: /home/{{ USERNAME }}/bootcamp-app
