@@ -198,7 +198,7 @@ module "vm1" {
   AZURE_LOCATION        = azurerm_resource_group.rg.location
   AVAILABILITY_SET_ID   = azurerm_availability_set.availability_set1.id
   STUDENT_NAME          = "Ohad"
-  VM_SIZE               = "Standard_B1s"
+  VM_SIZE               = "Standard_B2s"
   NETWORK_INTERFACE_IDS = azurerm_network_interface.network_interface_public1.id
   STORAGE_OS_DISK_NAME  = "bootcamp-storage-os-disk1"
   VM_ADMIN_PASSWORD     = var.VM_ADMIN_PASSWORD
@@ -212,7 +212,7 @@ module "vm2" {
   AZURE_LOCATION        = azurerm_resource_group.rg.location
   AVAILABILITY_SET_ID   = azurerm_availability_set.availability_set1.id
   STUDENT_NAME          = "Ohad"
-  VM_SIZE               = "Standard_B1s"
+  VM_SIZE               = "Standard_B2s"
   NETWORK_INTERFACE_IDS = azurerm_network_interface.network_interface_public2.id
   STORAGE_OS_DISK_NAME  = "bootcamp-storage-os-disk2"
   VM_ADMIN_PASSWORD     = var.VM_ADMIN_PASSWORD
