@@ -49,12 +49,6 @@
           PGPASSWORD={{ PGPASS }}
           PGPORT=5432
 
-    - name: Changing perm of "dbrun.sh", adding "+x"
-      file: dest=/home/{{ USERNAME }}/bootcamp-app/dbrun.sh mode=+x
-    - name: Reboot the db
-      ansible.builtin.cron:
-        name: "a job for reboot"
-        job: "/home/{{ USERNAME }}/bootcamp-app/dbrun.sh"
 
     - name: Changing perm of "webrun.sh", adding "+x"
       file: dest=/home/{{ USERNAME }}/bootcamp-app/webrun.sh mode=+x
